@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+    - main
+stages:
+- stage: __default
+  jobs:
+  - job: Job
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+        addToPath: true
+    - task: CmdLine@2
+      displayName: 'Init and validate'
+      inputs:
+        script: |
+          terraform init
+          terraform validate
+    - task: CmdLine@2
+      displayName: 'Terraform Plan'
+      inputs:
+        script: |
+          az login
+          terraform plan -out=tfplan
+    - task: CmdLine@2
+      displayName: 'Terraform Apply'
+      inputs:
+        script: |
+          export AUTO_APPROVE=yes
+          terraform apply -input=false tfplan
+    - task: CmdLine@2
+      displayName: 'Update statefile'
+      inputs:
+        script: |
+          terraform refresh
+
