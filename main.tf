@@ -13,7 +13,7 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "RG1"{
     name = "Resource_Group_1"
-    location = "West Europe"  
+    location = var.location 
 }
 
 resource "azurerm_virtual_network" "VNET1"{
