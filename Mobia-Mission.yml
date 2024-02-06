@@ -1,39 +1,34 @@
-trigger:
-  branches:
-    include:
-    - main
-stages:
-- stage: __default
-  jobs:
-  - job: Job
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.x'
-        addToPath: true
-    - task: CmdLine@2
-      displayName: 'Init and validate'
-      inputs:
-        script: |
-          terraform init
-          terraform validate
-    - task: CmdLine@2
-      displayName: 'Terraform Plan'
-      inputs:
-        script: |
-          az login
-          terraform plan -out=tfplan
-    - task: CmdLine@2
-      displayName: 'Terraform Apply'
-      inputs:
-        script: |
-          export AUTO_APPROVE=yes
-          terraform apply -input=false tfplan
-    - task: CmdLine@2
-      displayName: 'Update statefile'
-      inputs:
-        script: |
-          terraform refresh
+# Najam Rizvi
+# Terraform Automation Using Yaml Pipeline
+# Date: 02/02/2024
 
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- script: |
+    terraform init
+    terraform validate
+  displayName: 'Init and validate'
+
+- script: |
+    az login
+    terraform plan -out=tfplan
+  displayName: 'Terraform Plan'
+
+- script: |
+   export AUTO_APPROVE=yes
+   terraform apply -input=false tfplan
+  displayName: 'Terraform Apply'
+
+- script: |
+   terraform refresh
+  displayName: 'Update statefile'
